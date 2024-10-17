@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-// ListenAndServe 启动服务
-func ListenAndServe() {
+// Listen 启动服务
+func Listen() {
 	mux := http.NewServeMux()
 	//执行路由表
 	for _, handle := range handles {

@@ -19,17 +19,15 @@ func register(mux *http.ServeMux, handle Handle) {
 			_ = r.Body.Close()
 		}()
 
-		dec := gob.NewDecoder(r.Body)
 		var data body
-		err = dec.Decode(&data)
-		if err != nil {
+		if err = gob.NewDecoder(r.Body).Decode(&data); err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		//执行处理函数
-		result, err := handle.Process(data.Uid, data.Param, data.File)
+		result, err := handle.Process(data.Uid, data.Param)
 		if err != nil {
 			log.Println(err)
 			resBytes, _ = json.Marshal(response{
@@ -63,5 +61,4 @@ type response struct {
 type body struct {
 	Uid   uint64
 	Param []byte
-	File  []byte
 }

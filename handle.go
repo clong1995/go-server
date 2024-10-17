@@ -5,7 +5,7 @@ import "log"
 type Handle struct {
 	Uri     string
 	Desc    string
-	Process func(uid uint64, param []byte, file []byte) (any, error)
+	Process func(uid uint64, param []byte) (any, error)
 }
 
 var handles = make([]Handle, 0)
