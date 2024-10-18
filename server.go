@@ -13,7 +13,7 @@ func Listen() {
 	for _, handle := range handles {
 		register(mux, handle)
 	}
-	addr := ":90" + config.Config("PORT")
+	addr := ":90" + config.Config("MACHINE ID")
 	if addr == "" {
 		log.Fatalln("ADDR not found")
 	}
