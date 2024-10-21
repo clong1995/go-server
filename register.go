@@ -10,9 +10,7 @@ import (
 
 func register(mux *http.ServeMux, handle Handle) {
 	mux.HandleFunc(handle.Uri, func(w http.ResponseWriter, r *http.Request) {
-		//var uid string
 		var err error
-		//var reqBytes []byte
 		var resBytes []byte
 
 		defer func() {
