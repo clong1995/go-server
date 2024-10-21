@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"encoding/gob"
 	"encoding/json"
 	"log"
@@ -24,7 +25,6 @@ func register(mux *http.ServeMux, handle Handle) {
 			return
 		}
 
-		//执行处理函数
 		result, err := handle.Process(data.Uid, data.Param)
 		if err != nil {
 			log.Println(err)
@@ -34,14 +34,25 @@ func register(mux *http.ServeMux, handle Handle) {
 				0,
 			})
 		} else {
-			resBytes, _ = json.Marshal(response{
-				"OK",
-				result,
-				time.Now().Unix(),
-			})
+			if handle.Gob {
+				var buffer bytes.Buffer
+				if err = gob.NewEncoder(&buffer).Encode(result); err != nil {
+					log.Println(err)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+				resBytes = buffer.Bytes()
+			} else {
+				resBytes, _ = json.Marshal(response{
+					"OK",
+					result,
+					time.Now().Unix(),
+				})
+			}
 		}
-		//状态
+
 		w.WriteHeader(http.StatusOK)
+
 		//写出结果
 		if _, err = w.Write(resBytes); err != nil {
 			log.Println(err)
@@ -60,3 +71,5 @@ type body struct {
 	Uid   uint64
 	Param []byte
 }
+
+//

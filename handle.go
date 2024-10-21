@@ -5,6 +5,7 @@ import "log"
 type Handle struct {
 	Uri     string
 	Desc    string
+	Gob     bool
 	Process func(uid uint64, param []byte) (any, error)
 }
 
