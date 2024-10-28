@@ -1,9 +1,8 @@
 package server
 
 import (
-	"bytes"
-	"encoding/gob"
-	"encoding/json"
+	"github.com/clong1995/go-encipher/gob"
+	"github.com/clong1995/go-encipher/json"
 	"log"
 	"net/http"
 	"time"
@@ -11,52 +10,34 @@ import (
 
 func register(mux *http.ServeMux, handle Handle) {
 	mux.HandleFunc(handle.Uri, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		var resBytes []byte
-
 		defer func() {
 			_ = r.Body.Close()
 		}()
 
 		var data body
-		if err = gob.NewDecoder(r.Body).Decode(&data); err != nil {
+		err := gob.Decode(r.Body, &data)
+		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
+		resp := new(response)
+		resp.Timestamp = time.Now().Unix()
+
 		result, err := handle.Process(data.Uid, data.Param)
 		if err != nil {
 			log.Println(err)
-			resBytes, _ = json.Marshal(response{
-				err.Error(),
-				nil,
-				0,
-			})
+			resp.State = err.Error()
+			_ = json.Encoder(resp, w)
 		} else {
 			if handle.Gob {
-				var buffer bytes.Buffer
-				if err = gob.NewEncoder(&buffer).Encode(result); err != nil {
-					log.Println(err)
-					w.WriteHeader(http.StatusInternalServerError)
-					return
-				}
-				resBytes = buffer.Bytes()
+				_ = gob.Encoder(&result, w)
 			} else {
-				resBytes, _ = json.Marshal(response{
-					"OK",
-					result,
-					time.Now().Unix(),
-				})
+				resp.State = "OK"
+				resp.Data = result
+				_ = json.Encoder(resp, w)
 			}
-		}
-
-		w.WriteHeader(http.StatusOK)
-
-		//写出结果
-		if _, err = w.Write(resBytes); err != nil {
-			log.Println(err)
-			return
 		}
 	})
 }
@@ -71,5 +52,3 @@ type body struct {
 	Uid   uint64
 	Param []byte
 }
-
-//
