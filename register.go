@@ -1,43 +1,54 @@
 package server
 
 import (
+	"fmt"
 	"github.com/clong1995/go-encipher/gob"
 	"github.com/clong1995/go-encipher/json"
+	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
 func register(mux *http.ServeMux, handle Handle) {
 	mux.HandleFunc(handle.Uri, func(w http.ResponseWriter, r *http.Request) {
+		var err error
 		defer func() {
 			_ = r.Body.Close()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+			}
 		}()
 
-		var data body
-		err := gob.Decode(r.Body, &data)
-		if err != nil {
+		userId := r.Header.Get("user-id")
+		if userId == "" {
+			err = fmt.Errorf("user id is empty")
 			log.Println(err)
-			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		resp := new(response)
-		resp.Timestamp = time.Now().Unix()
-
-		result, err := handle.Process(data.Uid, data.Param)
+		uid, err := strconv.ParseUint(userId, 10, 64)
 		if err != nil {
 			log.Println(err)
-			resp.State = err.Error()
-			_ = json.Encoder(resp, w)
+			return
+		}
+
+		param, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		result, err := handle.Process(uid, param)
+		if handle.Gob {
+			_ = gob.Encoder(&result, w)
 		} else {
-			if handle.Gob {
-				_ = gob.Encoder(&result, w)
-			} else {
-				resp.State = "OK"
-				resp.Data = result
-				_ = json.Encoder(resp, w)
-			}
+			_ = json.Encoder(&response{
+				State:     "OK",
+				Data:      result,
+				Timestamp: time.Now().Unix(),
+			}, w)
 		}
 	})
 }
@@ -46,9 +57,4 @@ type response struct {
 	State     string `json:"state"`
 	Data      any    `json:"data"`
 	Timestamp int64  `json:"timestamp"`
-}
-
-type body struct {
-	Uid   uint64
-	Param []byte
 }
