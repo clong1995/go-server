@@ -42,9 +42,9 @@ func register(mux *http.ServeMux, handle Handle) {
 
 		result, err := handle.Process(uid, param)
 		if handle.Gob {
-			_ = gob.Encoder(&result, w)
+			_ = gob.Encode(&result, w)
 		} else {
-			_ = json.Encoder(&response{
+			_ = json.Encode(&response{
 				State:     "OK",
 				Data:      result,
 				Timestamp: time.Now().Unix(),
