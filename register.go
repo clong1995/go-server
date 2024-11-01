@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/clong1995/go-encipher/gob"
 	"github.com/clong1995/go-encipher/json"
-	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -34,13 +33,7 @@ func register(mux *http.ServeMux, handle Handle) {
 			return
 		}
 
-		param, err := io.ReadAll(r.Body)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		result, err := handle.Process(uid, param)
+		result, err := handle.Process(uid, r.Body)
 		if handle.Gob {
 			_ = gob.Encode(&result, w)
 		} else {

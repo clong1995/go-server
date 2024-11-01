@@ -1,12 +1,15 @@
 package server
 
-import "log"
+import (
+	"io"
+	"log"
+)
 
 type Handle struct {
 	Uri     string
 	Desc    string
 	Gob     bool
-	Process func(uid uint64, param []byte) (any, error)
+	Process func(uid uint64, reader io.Reader) (any, error)
 }
 
 var handles = make([]Handle, 0)
