@@ -1,7 +1,6 @@
 package server
 
 import (
-	"io"
 	"log"
 )
 
@@ -9,10 +8,10 @@ type Handle struct {
 	Uri     string
 	Desc    string
 	Gob     bool
-	Process func(uid uint64, reader io.Reader) (any, error)
+	Process func(uid uint64, param Param) (any, error)
 }
 
-var handles = make([]Handle, 0)
+type Param func(req any) error
 
 func (h Handle) Register() {
 	if h.Uri == "" || h.Desc == "" || h.Process == nil {

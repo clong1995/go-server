@@ -33,7 +33,21 @@ func register(mux *http.ServeMux, handle Handle) {
 			return
 		}
 
-		result, err := handle.Process(uid, r.Body)
+		result, err := handle.Process(uid, func(req any) (err error) {
+			if handle.Gob {
+				if err = gob.Decode(r.Body, req); err != nil {
+					log.Println(err)
+					return
+				}
+			} else {
+				if err = json.Decode(r.Body, req); err != nil {
+					log.Println(err)
+					return
+				}
+			}
+			return
+		})
+
 		if handle.Gob {
 			_ = gob.Encode(&result, w)
 		} else {

@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+var handles = make([]Handle, 0)
+
 // Listen 启动服务
 func Listen() {
 	mux := http.NewServeMux()
