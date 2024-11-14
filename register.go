@@ -49,13 +49,19 @@ func register(mux *http.ServeMux, handle Handle) {
 		})
 
 		if handle.Gob {
+			//TODO 这里没有处理错误
 			_ = gob.Encode(&result, w)
 		} else {
-			_ = json.Encode(&response{
-				State:     "OK",
-				Data:      result,
+			resp := &response{
 				Timestamp: time.Now().Unix(),
-			}, w)
+			}
+			if err != nil {
+				resp.State = err.Error()
+			} else {
+				resp.State = "OK"
+				resp.Data = result
+			}
+			_ = json.Encode(resp, w)
 		}
 	})
 }
