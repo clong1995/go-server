@@ -59,7 +59,7 @@ func register(mux *http.ServeMux, handle Handle) {
 		}
 
 		if handle.Gob {
-			_ = gob.Encode(&result, w)
+			_ = gob.Encode(result, w)
 		} else {
 			_ = json.Encode(&response{
 				State:     "OK",
