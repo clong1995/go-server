@@ -48,20 +48,24 @@ func register(mux *http.ServeMux, handle Handle) {
 			return
 		})
 
+		if err != nil {
+			log.Println(err)
+			if handle.Gob {
+				//TODO 这里没有处理错误
+			} else {
+				err = fmt.Errorf(`{"state":"%s"}`, err.Error())
+			}
+			return
+		}
+
 		if handle.Gob {
-			//TODO 这里没有处理错误
 			_ = gob.Encode(&result, w)
 		} else {
-			resp := &response{
+			_ = json.Encode(&response{
+				State:     "OK",
+				Data:      result,
 				Timestamp: time.Now().Unix(),
-			}
-			if err != nil {
-				resp.State = err.Error()
-			} else {
-				resp.State = "OK"
-				resp.Data = result
-			}
-			_ = json.Encode(resp, w)
+			}, w)
 		}
 	})
 }
