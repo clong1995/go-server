@@ -16,13 +16,13 @@ func register(mux *http.ServeMux, handle Handle) {
 		defer func() {
 			_ = r.Body.Close()
 			if err != nil {
-				var data string
+				/*var data string
 				if handle.Gob {
 					//TODO 这里没有处理错误
 				} else {
 					data = fmt.Sprintf(`{"state":"%s"}`, err.Error())
-				}
-				http.Error(w, data, http.StatusBadRequest)
+				}*/
+				http.Error(w, err.Error(), http.StatusBadRequest)
 			}
 		}()
 
@@ -53,7 +53,6 @@ func register(mux *http.ServeMux, handle Handle) {
 			}
 			return
 		})
-
 		if err != nil {
 			log.Println(err)
 			return
