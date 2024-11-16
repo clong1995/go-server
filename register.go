@@ -1,7 +1,7 @@
 package server
 
 import (
-	"fmt"
+	"errors"
 	"github.com/clong1995/go-encipher/gob"
 	"github.com/clong1995/go-encipher/json"
 	"log"
@@ -28,7 +28,7 @@ func register(mux *http.ServeMux, handle Handle) {
 
 		userId := r.Header.Get("user-id")
 		if userId == "" {
-			err = fmt.Errorf("user id is empty")
+			err = errors.New("user id is empty")
 			log.Println(err)
 			return
 		}
