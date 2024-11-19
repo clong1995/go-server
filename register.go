@@ -53,6 +53,9 @@ func register(mux *http.ServeMux, handle Handle) {
 		}
 
 		if handle.Gob {
+			if result == nil {
+				return
+			}
 			_ = gob.Encode(result, w)
 		} else {
 			_ = json.Encode(&response{
