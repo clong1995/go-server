@@ -1,10 +1,4 @@
-github.com/clong1995/go-config v0.0.0-20241014034831-1046ca1206d6 h1:sGMsM5s7fqlR5NuBZX5UHvu70MYn2NanyCdYdhPXSKs=
-github.com/clong1995/go-config v0.0.0-20241014034831-1046ca1206d6/go.mod h1:U+8aUkJjLYIimbrAobYsvM/GBDOgPjFZQaAqE2mL0GM=
 github.com/clong1995/go-config v0.0.0-20241018013119-7c9eb1a671ac h1:sTLgn8sqKxvvnfdrEdwnDc4Rd7+F9vyum0u1b657fl0=
 github.com/clong1995/go-config v0.0.0-20241018013119-7c9eb1a671ac/go.mod h1:U+8aUkJjLYIimbrAobYsvM/GBDOgPjFZQaAqE2mL0GM=
-github.com/clong1995/go-encipher v0.0.0-20241026131909-a533245dae1b h1:PuCyXxJ3SUFWmA/EfXDXrh2lFS/1MUDa1xPFsWCqPvg=
-github.com/clong1995/go-encipher v0.0.0-20241026131909-a533245dae1b/go.mod h1:J7sjI2arFCNRdxDg6aP7ps/D6+SupS9euFI24qNUsBM=
-github.com/clong1995/go-encipher v0.0.0-20241028085309-32f010e9158d h1:pQ1fmpnbWJZljyJluaZYl+37jfZocX+1kbVNwaj3MkU=
-github.com/clong1995/go-encipher v0.0.0-20241028085309-32f010e9158d/go.mod h1:J7sjI2arFCNRdxDg6aP7ps/D6+SupS9euFI24qNUsBM=
-github.com/clong1995/go-encipher v0.0.0-20241028095759-6475dc322cab h1:ydm9KHKRUDFCVz8Ga1RZRZnxtBlrNF74wqZ+7LtNMn4=
-github.com/clong1995/go-encipher v0.0.0-20241028095759-6475dc322cab/go.mod h1:J7sjI2arFCNRdxDg6aP7ps/D6+SupS9euFI24qNUsBM=
+github.com/clong1995/go-encipher v0.0.0-20241118102305-9d6c7d5b3a2e h1:KNuOuwOlRULW1ekNfCUQt8fNbLOnIgdd+6jjkN0NyQQ=
+github.com/clong1995/go-encipher v0.0.0-20241118102305-9d6c7d5b3a2e/go.mod h1:J7sjI2arFCNRdxDg6aP7ps/D6+SupS9euFI24qNUsBM=
