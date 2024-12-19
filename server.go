@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/clong1995/go-config"
 	"log"
 	"net/http"
@@ -43,8 +42,6 @@ func Close() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
-		fmt.Printf("优雅关闭失败: %v\n", err)
-	} else {
-		fmt.Println("优雅关闭成功")
+		log.Println(err)
 	}
 }
