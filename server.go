@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"github.com/clong1995/go-config"
 	"log"
 	"net/http"
@@ -31,7 +32,7 @@ func Listen() {
 	}
 	go func() {
 		err := server.ListenAndServe()
-		if err != nil {
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalln(err)
 			return
 		}
