@@ -27,9 +27,9 @@ func register(mux *http.ServeMux, handle Handle) {
 			return
 		}
 
-		uid, err := strconv.ParseUint(userId, 10, 64)
+		uid, err := strconv.ParseInt(userId, 10, 64)
 		if err != nil {
-			log.Println(err)
+			log.Fatalln(err)
 			return
 		}
 

@@ -8,7 +8,7 @@ type Handle struct {
 	Uri     string
 	Desc    string
 	Gob     bool
-	Process func(uid uint64, param Param) (any, error)
+	Process func(uid int64, param Param) (any, error)
 }
 
 type Param func(req any) error
