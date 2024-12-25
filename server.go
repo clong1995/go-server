@@ -12,7 +12,7 @@ import (
 var server *http.Server
 var handles = make([]Handle, 0)
 
-func Listen() {
+func init() {
 	mux := http.NewServeMux()
 	//执行路由表
 	for _, handle := range handles {
@@ -45,4 +45,5 @@ func Close() {
 	if err := server.Shutdown(ctx); err != nil {
 		log.Println(err)
 	}
+	log.Println("server exited!")
 }
