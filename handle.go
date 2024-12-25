@@ -4,6 +4,8 @@ import (
 	"log"
 )
 
+var handles = make([]Handle, 0)
+
 type Handle struct {
 	Uri     string
 	Desc    string
