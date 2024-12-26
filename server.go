@@ -30,6 +30,7 @@ func init() {
 	}
 
 	go func() {
+		time.Sleep(500 * time.Millisecond)
 		for _, handle := range handles {
 			register(mux, handle)
 		}
