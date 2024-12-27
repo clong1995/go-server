@@ -9,13 +9,14 @@ import (
 	"github.com/clong1995/go-encipher/json"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 )
 
-var httpserver *http.Server
-
-func init() {
+func Listen() {
 	mux := http.NewServeMux()
 
 	addr := ":90" + config.Value("MACHINE ID")
@@ -23,33 +24,35 @@ func init() {
 		log.Fatalln("ADDR not found")
 	}
 
-	//启动服务
-	httpserver = &http.Server{
+	for _, handle := range handles {
+		register(mux, handle)
+	}
+
+	httpserver := &http.Server{
 		Addr:    addr,
 		Handler: mux,
 	}
 
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
 	go func() {
-		time.Sleep(500 * time.Millisecond)
-		for _, handle := range handles {
-			register(mux, handle)
-		}
-		fmt.Printf("[http] listening %s\n", addr)
-		err := httpserver.ListenAndServe()
-		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalln(err)
-			return
+		_ = <-stop
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := httpserver.Shutdown(ctx); err != nil {
+			log.Println(err)
 		}
 	}()
-}
 
-func Close() {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := httpserver.Shutdown(ctx); err != nil {
-		log.Println(err)
+	fmt.Printf("[http] listening %s\n", addr)
+	err := httpserver.ListenAndServe()
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		log.Fatalln(err)
+		return
 	}
-	log.Println("server exited!")
+
+	fmt.Println("[http] server exited!")
 }
 
 func register(mux *http.ServeMux, handle Handle) {
