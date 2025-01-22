@@ -10,6 +10,7 @@ type Handle struct {
 	Uri     string
 	Desc    string
 	Gob     bool
+	Cache   string //perm:永久存储。ttl:自动过期和续期（只要被访问就继续续期）。ttl-dsc:自动过期(当新产生的时会有过期时间，被访问不会续期)
 	Process func(uid int64, param Param) (any, error)
 }
 
