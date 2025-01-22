@@ -117,10 +117,14 @@ func register(mux *http.ServeMux, handle Handle) {
 					}
 					_ = gob.Encode(res, buf)
 				} else {
+					var now int64
+					if handle.Cache == "" {
+						now = time.Now().Unix()
+					}
 					_ = json.Encode(&response{
 						State:     "OK",
 						Data:      res,
-						Timestamp: time.Now().Unix(),
+						Timestamp: now,
 					}, buf)
 				}
 				result = buf.Bytes()
