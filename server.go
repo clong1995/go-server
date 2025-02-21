@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/clong1995/go-config"
-	kv "github.com/clong1995/go-db-kv"
+	"github.com/clong1995/go-db-kv"
 	"github.com/clong1995/go-encipher/gob"
 	"github.com/clong1995/go-encipher/json"
 	"io"
@@ -16,6 +16,7 @@ import (
 	"os/signal"
 	"regexp"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -137,20 +138,38 @@ func register(mux *http.ServeMux, handle Handle) {
 				handle.Uri,
 				param,
 			))
+
+			var cacheType string
+			ttl := 15000
+			arr := strings.Split(handle.Cache, ":")
+			if len(arr) == 1 {
+				cacheType = arr[0]
+			} else if len(arr) == 2 {
+				cacheType = arr[0]
+				if ttl, err = strconv.Atoi(arr[1]); err != nil {
+					log.Println(err)
+					return
+				}
+			} else {
+				err = errors.New("cache type error")
+				log.Println(err)
+				return
+			}
+
 			var storage []byte
-			switch handle.Cache {
+			switch cacheType {
 			case "perm":
 				if storage, err = kv.Storage[[]byte](key, process); err != nil {
 					log.Println(err)
 					return
 				}
 			case "ttl":
-				if storage, err = kv.StorageTtl[[]byte](key, process, 15000); err != nil {
+				if storage, err = kv.StorageTtl[[]byte](key, process, ttl); err != nil {
 					log.Println(err)
 					return
 				}
 			case "ttl-dsc":
-				if storage, err = kv.StorageTtlDiscord[[]byte](key, process, 15000); err != nil {
+				if storage, err = kv.StorageTtlDiscord[[]byte](key, process, ttl); err != nil {
 					log.Println(err)
 					return
 				}
