@@ -34,13 +34,6 @@ func init() {
 		Handler: nil,
 	}
 
-	/*stop := make(chan os.Signal, 1)
-	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		_ = <-stop
-	}()*/
-
 	go func() {
 		err := httpserver.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
