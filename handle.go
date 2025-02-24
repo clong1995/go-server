@@ -2,9 +2,10 @@ package server
 
 import (
 	"log"
+	"sync"
 )
 
-var handles = make([]Handle, 0)
+var hs = newHandles()
 
 type Handle struct {
 	Uri     string
@@ -21,11 +22,34 @@ func (h Handle) Register() {
 		log.Fatalln("uri or desc or process is empty")
 	}
 
-	for _, handle := range handles {
-		if handle.Uri == h.Uri {
-			log.Fatalf("'%s' is redeclared", h.Uri)
-		}
+	_, ok := hs.get(h.Uri)
+	if ok {
+		log.Fatalf("%s is redeclared \n", h.Uri)
 	}
 
-	handles = append(handles, h)
+	hs.set(h.Uri, h)
+}
+
+type handles struct {
+	mu   sync.RWMutex
+	data map[string]Handle
+}
+
+func (h *handles) set(key string, value Handle) {
+	h.mu.Lock()         // 获取写锁
+	defer h.mu.Unlock() // 确保锁被释放
+	h.data[key] = value
+}
+
+func (h *handles) get(key string) (value Handle, ok bool) {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	value, ok = h.data[key]
+	return
+}
+
+func newHandles() *handles {
+	return &handles{
+		data: make(map[string]Handle),
+	}
 }
