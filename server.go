@@ -12,16 +12,14 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
 	"regexp"
 	"strconv"
 	"strings"
-	"syscall"
+	"sync"
 	"time"
 )
 
-func Listen() {
+func init() {
 	mId := config.Value("MACHINE ID")
 	if mId == "" {
 		log.Fatalln("MACHINE not found")
@@ -31,34 +29,42 @@ func Listen() {
 
 	http.HandleFunc("/", handler)
 
-	httpserver := &http.Server{
+	httpserver = &http.Server{
 		Addr:    addr,
 		Handler: nil,
 	}
 
-	stop := make(chan os.Signal, 1)
+	/*stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		_ = <-stop
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		if err := httpserver.Shutdown(ctx); err != nil {
-			log.Println(err)
+	}()*/
+
+	go func() {
+		err := httpserver.ListenAndServe()
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalln(err)
+			return
 		}
+		fmt.Println("[http] server exited!")
 	}()
-
 	fmt.Printf("[http] listening %s\n", addr)
-	err := httpserver.ListenAndServe()
-	if err != nil && !errors.Is(err, http.ErrServerClosed) {
-		log.Fatalln(err)
-		return
-	}
-
-	fmt.Println("[http] server exited!")
 }
 
+var httpserver *http.Server
+
+var hs = newHandles()
+
 var re = regexp.MustCompile(`"t":\d+,"a":"[^"]+",?`)
+
+func Close() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := httpserver.Shutdown(ctx); err != nil {
+		log.Println(err)
+	}
+}
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -217,4 +223,28 @@ type response struct {
 	State     string `json:"state"`
 	Data      any    `json:"data"`
 	Timestamp int64  `json:"timestamp"`
+}
+
+type handles struct {
+	mu   sync.RWMutex
+	data map[string]Handle
+}
+
+func (h *handles) set(key string, value Handle) {
+	h.mu.Lock()         // 获取写锁
+	defer h.mu.Unlock() // 确保锁被释放
+	h.data[key] = value
+}
+
+func (h *handles) get(key string) (value Handle, ok bool) {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	value, ok = h.data[key]
+	return
+}
+
+func newHandles() *handles {
+	return &handles{
+		data: make(map[string]Handle),
+	}
 }
