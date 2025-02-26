@@ -84,7 +84,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	uid, err := strconv.ParseInt(userId, 10, 64)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 		return
 	}
 
