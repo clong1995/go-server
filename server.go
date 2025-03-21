@@ -49,7 +49,7 @@ var httpserver *http.Server
 
 var hs = newHandles()
 
-var re = regexp.MustCompile(`"t":\d+,"a":"[^"]+",?`)
+var reg = regexp.MustCompile(`"t":\d+,"a":"[^"]+",?`)
 
 func Close() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -134,7 +134,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			result = buf.Bytes()
 			return
 		}
-		param := re.ReplaceAllString(string(all), "")
+		param := reg.ReplaceAllString(string(all), "")
 		key := kv.HashKey(fmt.Sprintf(
 			"%s%s%s",
 			config.Value("MACHINE ID"),
