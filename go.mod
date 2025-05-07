@@ -4,7 +4,7 @@ go 1.24
 
 require (
 	github.com/clong1995/go-config v0.0.0-20250321150414-57a84ace93c7
-	github.com/clong1995/go-db-kv v0.0.0-20250507000631-3d1cca9b19be
+	github.com/clong1995/go-db-kv v0.0.0-20250507025747-891a1083100a
 	github.com/clong1995/go-encipher v0.0.0-20250321150739-ebd6f0d42ffb
 )
 
