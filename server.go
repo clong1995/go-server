@@ -5,10 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/clong1995/go-config"
-	"github.com/clong1995/go-db-kv"
-	"github.com/clong1995/go-encipher/gob"
-	"github.com/clong1995/go-encipher/json"
 	"io"
 	"log"
 	"net/http"
@@ -17,7 +13,15 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/clong1995/go-ansi-color"
+	"github.com/clong1995/go-config"
+	"github.com/clong1995/go-db-kv"
+	"github.com/clong1995/go-encipher/gob"
+	"github.com/clong1995/go-encipher/json"
 )
+
+var prefix = "server"
 
 func init() {
 	mId := config.Value("MACHINE ID")
@@ -40,9 +44,9 @@ func init() {
 			log.Fatalln(err)
 			return
 		}
-		fmt.Println("[http] server exited!")
+		pcolor.PrintSucc(prefix, "server exited!")
 	}()
-	fmt.Printf("[http] listening %s\n", addr)
+	pcolor.PrintSucc(prefix, "listening %s\n", addr)
 }
 
 var httpserver *http.Server
@@ -55,7 +59,7 @@ func Close() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := httpserver.Shutdown(ctx); err != nil {
-		log.Println(err)
+		pcolor.PrintFatal(prefix, err.Error())
 	}
 }
 
@@ -143,16 +147,18 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		))
 
 		var cacheType string
-		ttl := 15000
+		var ttl int64 = 15000
 		arr := strings.Split(handle.Cache, ":")
 		if len(arr) == 1 {
 			cacheType = arr[0]
 		} else if len(arr) == 2 {
 			cacheType = arr[0]
-			if ttl, err = strconv.Atoi(arr[1]); err != nil {
+			var i int
+			if i, err = strconv.Atoi(arr[1]); err != nil {
 				log.Println(err)
 				return
 			}
+			ttl = int64(i)
 		} else {
 			err = errors.New("cache type error")
 			log.Println(err)
@@ -167,12 +173,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		case "ttl":
-			if storage, err = kv.StorageTtl[[]byte](key, process, ttl); err != nil {
+			if storage, err = kv.Storage[[]byte](key, process, ttl); err != nil {
 				log.Println(err)
 				return
 			}
 		case "ttl-dsc":
-			if storage, err = kv.StorageTtlDiscord[[]byte](key, process, ttl); err != nil {
+			if storage, err = kv.Storage[[]byte](key, process, ttl, 1); err != nil {
 				log.Println(err)
 				return
 			}
