@@ -5,7 +5,7 @@ go 1.25
 require (
 	github.com/clong1995/go-ansi-color v0.0.0-20251016014428-61ea4bba5de6
 	github.com/clong1995/go-config v0.0.0-20251016024738-1d0e21986853
-	github.com/clong1995/go-db-kv v0.0.0-20251016031424-829dbad63c8d
+	github.com/clong1995/go-db-kv v0.0.0-20251016045922-5cc2dbe48dfb
 	github.com/clong1995/go-encipher v0.0.0-20250714045541-ede16e86a49d
 )
 
