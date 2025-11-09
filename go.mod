@@ -4,9 +4,9 @@ go 1.25
 
 require (
 	github.com/clong1995/go-ansi-color v0.0.0-20251016014428-61ea4bba5de6
-	github.com/clong1995/go-config v0.0.0-20251020035946-879ecdb4c766
+	github.com/clong1995/go-config v0.0.0-20251108135142-ae0453f3b68f
 	github.com/clong1995/go-db-kv v0.0.0-20251016045922-5cc2dbe48dfb
-	github.com/clong1995/go-encipher v0.0.0-20250714045541-ede16e86a49d
+	github.com/clong1995/go-encipher v0.0.0-20251108150327-0dacce296f80
 )
 
 require (
@@ -28,4 +28,4 @@ require (
 	google.golang.org/protobuf v1.36.10 // indirect
 )
 
-//replace github.com/clong1995/go-db-kv => /Users/huazhimeng/Desktop/golang_mod/go-db-kv
+//replace github.com/clong1995/go-config => /Users/huazhimeng/Desktop/golang_mod/go-config

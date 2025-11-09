@@ -10,6 +10,8 @@ github.com/clong1995/go-config v0.0.0-20251016024738-1d0e21986853 h1:BqfMb/U39Yl
 github.com/clong1995/go-config v0.0.0-20251016024738-1d0e21986853/go.mod h1:z5is5krC0JXYgIXQ2ZwEsETEL1Wrb/fYuT1YXTTmGB4=
 github.com/clong1995/go-config v0.0.0-20251020035946-879ecdb4c766 h1:avy3F12WxRYMl7SRy8UQrX/sxwIztfgOzRV+r/5HIPw=
 github.com/clong1995/go-config v0.0.0-20251020035946-879ecdb4c766/go.mod h1:z5is5krC0JXYgIXQ2ZwEsETEL1Wrb/fYuT1YXTTmGB4=
+github.com/clong1995/go-config v0.0.0-20251108135142-ae0453f3b68f h1:077OHs/cjNZwTOhr2sOuUmYfSg3SRdLEvHPvUeToYFQ=
+github.com/clong1995/go-config v0.0.0-20251108135142-ae0453f3b68f/go.mod h1:z5is5krC0JXYgIXQ2ZwEsETEL1Wrb/fYuT1YXTTmGB4=
 github.com/clong1995/go-db-kv v0.0.0-20250507000631-3d1cca9b19be h1:hPc9Ib0VM5qDb7B0rkcAHzoGdvQsxnO8FIo7R/pfwaw=
 github.com/clong1995/go-db-kv v0.0.0-20250507000631-3d1cca9b19be/go.mod h1:YD+RlEdQRnS8Ri6H4vs1I0SjlwG0dLtoknvXNeA6zsM=
 github.com/clong1995/go-db-kv v0.0.0-20250507025747-891a1083100a/go.mod h1:QUQgrDnb5CXcNoemgstI9xfN0OTv5iPKFwHStkvHIEk=
@@ -27,6 +29,8 @@ github.com/clong1995/go-encipher v0.0.0-20250321150739-ebd6f0d42ffb h1:ybFQcyIll
 github.com/clong1995/go-encipher v0.0.0-20250321150739-ebd6f0d42ffb/go.mod h1:GUqy14j6tPellfqlirkc3+8FJMLPM1eCu/y6V5n6jmo=
 github.com/clong1995/go-encipher v0.0.0-20250714045541-ede16e86a49d h1:jF8iECFTABcczm79T9umwI/gYGvJXCxY+2M7W140V8U=
 github.com/clong1995/go-encipher v0.0.0-20250714045541-ede16e86a49d/go.mod h1:GUqy14j6tPellfqlirkc3+8FJMLPM1eCu/y6V5n6jmo=
+github.com/clong1995/go-encipher v0.0.0-20251108150327-0dacce296f80 h1:fjbTa21re2LmUvW4SUiLfmCnAB7SptkK15Hz3Yu88Lg=
+github.com/clong1995/go-encipher v0.0.0-20251108150327-0dacce296f80/go.mod h1:GUqy14j6tPellfqlirkc3+8FJMLPM1eCu/y6V5n6jmo=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dgraph-io/badger/v4 v4.7.0 h1:Q+J8HApYAY7UMpL8d9owqiB+odzEc0zn/aqOD9jhc6Y=
