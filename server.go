@@ -14,22 +14,29 @@ import (
 	"sync"
 	"time"
 
-	"github.com/clong1995/go-ansi-color"
+	pcolor "github.com/clong1995/go-ansi-color"
 	"github.com/clong1995/go-config"
-	"github.com/clong1995/go-db-kv"
+	kv "github.com/clong1995/go-db-kv"
 	"github.com/clong1995/go-encipher/gob"
 	"github.com/clong1995/go-encipher/json"
 )
 
-var prefix = "server"
+var (
+	prefix     = "server"
+	httpserver *http.Server
+	hs         = newHandles()
+	reg        = regexp.MustCompile(`"t":\d+,"a":"[^"]+",?`)
+	machineID  int
+)
 
 func init() {
-	machineId, exists := config.Value[int]("MACHINE ID")
-	if !exists || machineId == 0 {
+	var exists bool
+	machineID, exists = config.Value[int]("MACHINE ID")
+	if !exists || machineID == 0 {
 		log.Fatalln("MACHINE not found")
 	}
 
-	addr := fmt.Sprintf(":90%d", machineId)
+	addr := fmt.Sprintf(":90%d", machineID)
 
 	http.HandleFunc("/", handler)
 
@@ -51,10 +58,6 @@ func init() {
 	}()
 	pcolor.PrintSucc(prefix, "listening %s", addr)
 }
-
-var httpserver *http.Server
-var hs = newHandles()
-var reg = regexp.MustCompile(`"t":\d+,"a":"[^"]+",?`)
 
 func Close() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -151,10 +154,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		param := reg.ReplaceAll(all, []byte(""))
-		machineId, _ := config.Value[int]("MACHINE ID")
 		key := kv.HashKey(fmt.Sprintf(
-			"%s%s%s",
-			machineId,
+			"%d%s%s",
+			machineID,
 			handle.Uri,
 			param,
 		))
