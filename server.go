@@ -24,35 +24,36 @@ import (
 var prefix = "server"
 
 func init() {
-	mId := config.Value("MACHINE ID")
-	if mId == "" {
+	machineId, exists := config.Value[int]("MACHINE ID")
+	if !exists || machineId == 0 {
 		log.Fatalln("MACHINE not found")
 	}
 
-	addr := fmt.Sprintf(":90%s", mId)
+	addr := fmt.Sprintf(":90%d", machineId)
 
 	http.HandleFunc("/", handler)
 
 	httpserver = &http.Server{
-		Addr:    addr,
-		Handler: nil,
+		Addr:         addr,
+		Handler:      nil,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  30 * time.Second,
 	}
 
 	go func() {
 		err := httpserver.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalln(err)
+			pcolor.PrintFatal(prefix, err.Error())
 			return
 		}
 		pcolor.PrintSucc(prefix, "server exited!")
 	}()
-	pcolor.PrintSucc(prefix, "listening %s\n", addr)
+	pcolor.PrintSucc(prefix, "listening %s", addr)
 }
 
 var httpserver *http.Server
-
 var hs = newHandles()
-
 var reg = regexp.MustCompile(`"t":\d+,"a":"[^"]+",?`)
 
 func Close() {
@@ -65,84 +66,95 @@ func Close() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	var err error
-	defer func() {
-		_ = r.Body.Close()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-	}()
+	defer r.Body.Close()
 
 	handle, ok := hs.get(r.URL.Path)
 	if !ok {
-		err = errors.New("not found")
+		err := fmt.Errorf("handler not found:%s", r.URL.Path)
 		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
 	userId := r.Header.Get("user-id")
 	if userId == "" {
-		err = errors.New("user id is empty")
+		err := errors.New("user id is empty")
 		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	uid, err := strconv.ParseInt(userId, 10, 64)
 	if err != nil {
 		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
+	}
+
+	if handle.Gob {
+		w.Header().Set("Content-Type", "application/octet-stream")
+	} else {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	}
 
 	if handle.Cache != "" {
 		var all []byte
+
 		if all, err = io.ReadAll(r.Body); err != nil {
 			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		process := func() (result []byte, err error) {
-			res, err := handle.Process(uid, func(req any) (err error) {
+
+		// result []byte, err error
+		process := func() ([]byte, error) {
+			res, processErr := handle.Process(uid, func(req any) error {
 				buf := bytes.NewBuffer(all)
 				if handle.Gob {
-					if err = gob.Decode(buf, req); err != nil {
-						log.Println(err)
-						return
+					if paramErr := gob.Decode(buf, req); paramErr != nil {
+						log.Printf("%+v\n", paramErr)
+						return paramErr
 					}
 				} else {
-					if err = json.Decode(buf, req); err != nil {
-						log.Println(err)
-						return
+					if paramErr := json.Decode(buf, req); paramErr != nil {
+						log.Printf("%+v\n", paramErr)
+						return paramErr
 					}
 				}
-				return
+				return nil
 			})
-			if err != nil {
-				log.Println(err)
-				return
+			if processErr != nil {
+				log.Printf("%+v\n", processErr)
+				return nil, processErr
 			}
+
 			buf := new(bytes.Buffer)
 			if handle.Gob {
-				if res == nil {
-					return
+				if res != nil {
+					if paramErr := gob.Encode(res, buf); paramErr != nil {
+						log.Printf("%+v\n", paramErr)
+						return nil, paramErr
+					}
 				}
-				_ = gob.Encode(res, buf)
 			} else {
-				var now int64
-				if handle.Cache == "" {
-					now = time.Now().Unix()
-				}
-				_ = json.Encode(&response{
+				if paramErr := json.Encode(&response{
 					State:     "OK",
 					Data:      res,
-					Timestamp: now,
-				}, buf)
+					Timestamp: time.Now().Unix(),
+				}, buf); paramErr != nil {
+					log.Printf("%+v\n", paramErr)
+					return nil, paramErr
+				}
 			}
-			result = buf.Bytes()
-			return
+
+			return buf.Bytes(), nil
 		}
-		param := reg.ReplaceAllString(string(all), "")
+
+		param := reg.ReplaceAll(all, []byte(""))
+		machineId, _ := config.Value[int]("MACHINE ID")
 		key := kv.HashKey(fmt.Sprintf(
 			"%s%s%s",
-			config.Value("MACHINE ID"),
+			machineId,
 			handle.Uri,
 			param,
 		))
@@ -150,71 +162,88 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		var cacheType string
 		var ttl int64 = 15000
 		arr := strings.Split(handle.Cache, ":")
-		if len(arr) == 1 {
-			cacheType = arr[0]
-		} else if len(arr) == 2 {
-			cacheType = arr[0]
-			var i int
-			if i, err = strconv.Atoi(arr[1]); err != nil {
-				log.Println(err)
+		cacheType = arr[0]
+		if len(arr) == 2 {
+			i, atoiErr := strconv.Atoi(arr[1])
+			if atoiErr != nil {
+				log.Println(atoiErr)
+				http.Error(w, atoiErr.Error(), http.StatusInternalServerError)
 				return
 			}
 			ttl = int64(i)
-		} else {
-			err = errors.New("cache type error")
+		} else if len(arr) != 1 {
+			err = errors.New("cache err")
 			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		var storage []byte
+
 		switch cacheType {
 		case "perm":
 			if storage, err = kv.Storage[[]byte](key, process); err != nil {
-				log.Println(err)
+				log.Printf("%+v\n", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		case "ttl":
 			if storage, err = kv.Storage[[]byte](key, process, ttl); err != nil {
-				log.Println(err)
+				log.Printf("%+v\n", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		case "ttl-dsc":
 			if storage, err = kv.Storage[[]byte](key, process, ttl, 1); err != nil {
-				log.Println(err)
+				log.Printf("%+v\n", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+		default:
+			err = fmt.Errorf("unknown cache type: %s", cacheType)
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
+
 		_, _ = w.Write(storage)
 	} else {
 		var result any
-		if result, err = handle.Process(uid, func(req any) (err error) {
+		result, err = handle.Process(uid, func(req any) error {
 			if handle.Gob {
-				if err = gob.Decode(r.Body, req); err != nil {
-					log.Println(err)
-					return
+				if decodeErr := gob.Decode(r.Body, req); decodeErr != nil {
+					log.Printf("%+v\n", decodeErr)
+					return decodeErr
 				}
-			} else {
-				if err = json.Decode(r.Body, req); err != nil {
-					log.Println(err)
-					return
-				}
+				return nil
 			}
-			return
-		}); err != nil {
+			if decodeErr := json.Decode(r.Body, req); decodeErr != nil {
+				log.Printf("%+v\n", decodeErr)
+				return decodeErr
+			}
+			return nil
+		})
+
+		if err != nil {
 			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
 		if handle.Gob {
-			if result == nil {
-				return
+			if result != nil {
+				if err = gob.Encode(result, w); err != nil {
+					log.Printf("%+v\n", err)
+				}
 			}
-			_ = gob.Encode(result, w)
 		} else {
-			_ = json.Encode(&response{
+			if err = json.Encode(&response{
 				State:     "OK",
 				Data:      result,
 				Timestamp: time.Now().Unix(),
-			}, w)
+			}, w); err != nil {
+				log.Printf("%+v\n", err)
+			}
 		}
 	}
 }
@@ -231,16 +260,16 @@ type handles struct {
 }
 
 func (h *handles) set(key string, value Handle) {
-	h.mu.Lock()         // 获取写锁
-	defer h.mu.Unlock() // 确保锁被释放
+	h.mu.Lock()
+	defer h.mu.Unlock()
 	h.data[key] = value
 }
 
-func (h *handles) get(key string) (value Handle, ok bool) {
+func (h *handles) get(key string) (Handle, bool) {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
-	value, ok = h.data[key]
-	return
+	value, ok := h.data[key]
+	return value, ok
 }
 
 func newHandles() *handles {
