@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -33,7 +32,7 @@ func init() {
 	var exists bool
 	machineID, exists = config.Value[int]("MACHINE ID")
 	if !exists || machineID == 0 {
-		log.Fatalln("MACHINE not found")
+		pcolor.PrintFatal(prefix, "MACHINE not found")
 	}
 
 	addr := fmt.Sprintf(":90%d", machineID)
@@ -63,7 +62,7 @@ func Close() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := httpserver.Shutdown(ctx); err != nil {
-		pcolor.PrintError(prefix, err.Error())
+		pcolor.PrintError(prefix, err)
 	}
 	kv.Close()
 }
@@ -74,22 +73,22 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	handle, ok := hs.get(r.URL.Path)
 	if !ok {
 		err := fmt.Errorf("handler not found:%s", r.URL.Path)
-		log.Println(err)
+		pcolor.PrintError(prefix, err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
 	userId := r.Header.Get("user-id")
 	if userId == "" {
-		err := errors.New("user id is empty")
-		log.Println(err)
+		err := fmt.Errorf("user id is empty")
+		pcolor.PrintError(prefix, err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	uid, err := strconv.ParseInt(userId, 10, 64)
 	if err != nil {
-		log.Println(err)
+		pcolor.PrintError(prefix, err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -104,7 +103,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		var all []byte
 
 		if all, err = io.ReadAll(r.Body); err != nil {
-			log.Println(err)
+			pcolor.PrintError(prefix, err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -115,19 +114,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				buf := bytes.NewBuffer(all)
 				if handle.Gob {
 					if paramErr := gob.Decode(buf, req); paramErr != nil {
-						log.Printf("%+v\n", paramErr)
+						pcolor.PrintErr(prefix, "%+v\n", paramErr)
 						return paramErr
 					}
 				} else {
 					if paramErr := json.Decode(buf, req); paramErr != nil {
-						log.Printf("%+v\n", paramErr)
+						pcolor.PrintErr(prefix, "%+v\n", paramErr)
 						return paramErr
 					}
 				}
 				return nil
 			})
 			if processErr != nil {
-				log.Printf("%+v\n", processErr)
+				pcolor.PrintErr(prefix, "%+v\n", processErr)
 				return nil, processErr
 			}
 
@@ -135,7 +134,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			if handle.Gob {
 				if res != nil {
 					if paramErr := gob.Encode(res, buf); paramErr != nil {
-						log.Printf("%+v\n", paramErr)
+						pcolor.PrintErr(prefix, "%+v\n", paramErr)
 						return nil, paramErr
 					}
 				}
@@ -145,7 +144,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 					Data:      res,
 					Timestamp: time.Now().Unix(),
 				}, buf); paramErr != nil {
-					log.Printf("%+v\n", paramErr)
+					pcolor.PrintErr(prefix, "%+v\n", paramErr)
 					return nil, paramErr
 				}
 			}
@@ -166,16 +165,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		arr := strings.Split(handle.Cache, ":")
 		cacheType = arr[0]
 		if len(arr) == 2 {
-			i, atoiErr := strconv.Atoi(arr[1])
-			if atoiErr != nil {
-				log.Println(atoiErr)
-				http.Error(w, atoiErr.Error(), http.StatusInternalServerError)
+			var i int
+			if i, err = strconv.Atoi(arr[1]); err != nil {
+				pcolor.PrintError(prefix, err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 			ttl = int64(i)
 		} else if len(arr) != 1 {
-			err = errors.New("cache err")
-			log.Println(err)
+			err = fmt.Errorf("cache err")
+			pcolor.PrintError(prefix, err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -185,25 +184,25 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		switch cacheType {
 		case "perm":
 			if storage, err = kv.Storage[[]byte](key, process); err != nil {
-				log.Printf("%+v\n", err)
+				pcolor.PrintErr(prefix, "%+v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		case "ttl":
 			if storage, err = kv.Storage[[]byte](key, process, ttl); err != nil {
-				log.Printf("%+v\n", err)
+				pcolor.PrintErr(prefix, "%+v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		case "ttl-dsc":
 			if storage, err = kv.Storage[[]byte](key, process, ttl, 1); err != nil {
-				log.Printf("%+v\n", err)
+				pcolor.PrintErr(prefix, "%+v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		default:
 			err = fmt.Errorf("unknown cache type: %s", cacheType)
-			log.Println(err)
+			pcolor.PrintError(prefix, err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -214,20 +213,20 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		result, err = handle.Process(uid, func(req any) error {
 			if handle.Gob {
 				if decodeErr := gob.Decode(r.Body, req); decodeErr != nil {
-					log.Printf("%+v\n", decodeErr)
+					pcolor.PrintErr(prefix, "%+v\n", decodeErr)
 					return decodeErr
 				}
 				return nil
 			}
 			if decodeErr := json.Decode(r.Body, req); decodeErr != nil {
-				log.Printf("%+v\n", decodeErr)
+				pcolor.PrintErr(prefix, "%+v\n", decodeErr)
 				return decodeErr
 			}
 			return nil
 		})
 
 		if err != nil {
-			log.Println(err)
+			pcolor.PrintError(prefix, err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -235,7 +234,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		if handle.Gob {
 			if result != nil {
 				if err = gob.Encode(result, w); err != nil {
-					log.Printf("%+v\n", err)
+					pcolor.PrintErr(prefix, "%+v\n", err)
 				}
 			}
 		} else {
@@ -244,7 +243,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				Data:      result,
 				Timestamp: time.Now().Unix(),
 			}, w); err != nil {
-				log.Printf("%+v\n", err)
+				pcolor.PrintErr(prefix, "%+v\n", err)
 			}
 		}
 	}

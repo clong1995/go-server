@@ -7,7 +7,6 @@ require (
 	github.com/clong1995/go-config v0.0.0-20260325145758-46c5a40c3ecf
 	github.com/clong1995/go-db-kv v0.0.0-20260324095257-520d20e33bfb
 	github.com/clong1995/go-encipher v0.0.0-20260315015454-e8484a857e2e
-	github.com/pkg/errors v0.9.1
 )
 
 require (
@@ -19,6 +18,7 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/google/flatbuffers v25.12.19+incompatible // indirect
 	github.com/klauspost/compress v1.18.5 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/otel v1.42.0 // indirect
 	go.opentelemetry.io/otel/metric v1.42.0 // indirect
@@ -29,4 +29,4 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 )
 
-//replace github.com/clong1995/go-config => /Users/huazhimeng/Desktop/golang_mod/go-config
+replace github.com/clong1995/go-ansi-color => /Users/markeckles/Desktop/go-mod/go-ansi-color
