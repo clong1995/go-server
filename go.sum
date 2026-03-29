@@ -16,6 +16,8 @@ github.com/clong1995/go-db-kv v0.0.0-20260324095257-520d20e33bfb h1:nbSdsgByqR+8
 github.com/clong1995/go-db-kv v0.0.0-20260324095257-520d20e33bfb/go.mod h1:vMKWCe7AdF7lfUcyTnz/kMMymeiCflYXiAgQF3Vkkok=
 github.com/clong1995/go-db-kv v0.0.0-20260329052835-a3e7616f3e6e h1:x31QZN546Gj7NdFpOgsgpZX4x628qlnZ+IL6F5v75+w=
 github.com/clong1995/go-db-kv v0.0.0-20260329052835-a3e7616f3e6e/go.mod h1:l64zXQaaV8b6HeS/vc1W0r2M0CrWoO0rkYZ1F7t/KwI=
+github.com/clong1995/go-db-kv v0.0.0-20260329061028-35f48bcbfcb1 h1:uNgZtLEcI86VxedO2qk17ummcp+FYeKP/AWNrSIizEI=
+github.com/clong1995/go-db-kv v0.0.0-20260329061028-35f48bcbfcb1/go.mod h1:l64zXQaaV8b6HeS/vc1W0r2M0CrWoO0rkYZ1F7t/KwI=
 github.com/clong1995/go-encipher v0.0.0-20251108150327-0dacce296f80 h1:fjbTa21re2LmUvW4SUiLfmCnAB7SptkK15Hz3Yu88Lg=
 github.com/clong1995/go-encipher v0.0.0-20251108150327-0dacce296f80/go.mod h1:GUqy14j6tPellfqlirkc3+8FJMLPM1eCu/y6V5n6jmo=
 github.com/clong1995/go-encipher v0.0.0-20260315015454-e8484a857e2e h1:ylqIrJOHEn6VpiAgfAW4SnlQHicvQe6qiE0w+6wJ7zQ=
