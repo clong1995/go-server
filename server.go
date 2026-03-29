@@ -21,7 +21,6 @@ import (
 )
 
 var (
-	prefix     = "server"
 	httpserver *http.Server
 	hs         = newHandles()
 	reg        = regexp.MustCompile(`"t":\d+,"a":"[^"]+",?`)
