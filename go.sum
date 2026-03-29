@@ -4,6 +4,8 @@ github.com/clong1995/go-ansi-color v0.0.0-20251016014428-61ea4bba5de6 h1:9ydMhhL
 github.com/clong1995/go-ansi-color v0.0.0-20251016014428-61ea4bba5de6/go.mod h1:TCBnJ3qgGfwqbmMJuRH1hfaYzzzZabGMeSx19V8lYZg=
 github.com/clong1995/go-ansi-color v0.0.0-20260314102151-cbbdfbe952a8 h1:q6HnwjA0cAwaNAIorlj2ojUjgdxzriRPYSOKB0+XF2Q=
 github.com/clong1995/go-ansi-color v0.0.0-20260314102151-cbbdfbe952a8/go.mod h1:7ZGDhoNTkKxVwqejBrsexg1Sh1zKD402CAAg1f0gLRU=
+github.com/clong1995/go-ansi-color v0.0.0-20260328163340-46c1c3efec53 h1:dMnAGOuNjsEtksiB4wqpIlqw54TOYuBRw7HAHRkcKwY=
+github.com/clong1995/go-ansi-color v0.0.0-20260328163340-46c1c3efec53/go.mod h1:7ZGDhoNTkKxVwqejBrsexg1Sh1zKD402CAAg1f0gLRU=
 github.com/clong1995/go-config v0.0.0-20251108135142-ae0453f3b68f h1:077OHs/cjNZwTOhr2sOuUmYfSg3SRdLEvHPvUeToYFQ=
 github.com/clong1995/go-config v0.0.0-20251108135142-ae0453f3b68f/go.mod h1:z5is5krC0JXYgIXQ2ZwEsETEL1Wrb/fYuT1YXTTmGB4=
 github.com/clong1995/go-config v0.0.0-20260325145758-46c5a40c3ecf h1:FLaJLf4Bv3aEJX/Brq7Kp8C/Aqo573NZALRn+SCp8C0=
@@ -12,6 +14,8 @@ github.com/clong1995/go-db-kv v0.0.0-20251016045922-5cc2dbe48dfb h1:z/nmPIAobNhI
 github.com/clong1995/go-db-kv v0.0.0-20251016045922-5cc2dbe48dfb/go.mod h1:FW18cjGxCsxrC7VQcaUurONN0M2j+sjO81rgwoCeUP0=
 github.com/clong1995/go-db-kv v0.0.0-20260324095257-520d20e33bfb h1:nbSdsgByqR+8OJT0qp2lODSByJyDwUq50Y/pfCmvYpA=
 github.com/clong1995/go-db-kv v0.0.0-20260324095257-520d20e33bfb/go.mod h1:vMKWCe7AdF7lfUcyTnz/kMMymeiCflYXiAgQF3Vkkok=
+github.com/clong1995/go-db-kv v0.0.0-20260329052835-a3e7616f3e6e h1:x31QZN546Gj7NdFpOgsgpZX4x628qlnZ+IL6F5v75+w=
+github.com/clong1995/go-db-kv v0.0.0-20260329052835-a3e7616f3e6e/go.mod h1:l64zXQaaV8b6HeS/vc1W0r2M0CrWoO0rkYZ1F7t/KwI=
 github.com/clong1995/go-encipher v0.0.0-20251108150327-0dacce296f80 h1:fjbTa21re2LmUvW4SUiLfmCnAB7SptkK15Hz3Yu88Lg=
 github.com/clong1995/go-encipher v0.0.0-20251108150327-0dacce296f80/go.mod h1:GUqy14j6tPellfqlirkc3+8FJMLPM1eCu/y6V5n6jmo=
 github.com/clong1995/go-encipher v0.0.0-20260315015454-e8484a857e2e h1:ylqIrJOHEn6VpiAgfAW4SnlQHicvQe6qiE0w+6wJ7zQ=
