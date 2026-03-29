@@ -28,7 +28,7 @@ var (
 	machineID  int
 )
 
-func init() {
+func start() {
 	var exists bool
 	machineID, exists = config.Value[int]("MACHINE ID")
 	if !exists || machineID == 0 {
