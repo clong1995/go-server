@@ -14,7 +14,6 @@ import (
 	"time"
 
 	pcolor "github.com/clong1995/go-ansi-color"
-	"github.com/clong1995/go-config"
 	kv "github.com/clong1995/go-db-kv"
 	"github.com/clong1995/go-encipher/gob"
 	"github.com/clong1995/go-encipher/json"
@@ -24,16 +23,9 @@ var (
 	httpserver *http.Server
 	hs         = newHandles()
 	reg        = regexp.MustCompile(`"t":\d+,"a":"[^"]+",?`)
-	machineID  int
 )
 
 func start() {
-	var exists bool
-	machineID, exists = config.Value[int]("MACHINE ID")
-	if !exists || machineID == 0 {
-		pcolor.PrintFatal(prefix, "MACHINE not found")
-	}
-
 	addr := fmt.Sprintf(":90%d", machineID)
 
 	http.HandleFunc("/", handler)
