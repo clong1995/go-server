@@ -3,10 +3,10 @@ module github.com/clong1995/go-server
 go 1.26
 
 require (
-	github.com/clong1995/go-ansi-color v0.0.0-20260328163340-46c1c3efec53
-	github.com/clong1995/go-config v0.0.0-20260325145758-46c5a40c3ecf
+	github.com/clong1995/go-ansi-color v0.0.0-20260329160324-213fff2ee7eb
+	github.com/clong1995/go-config v0.0.0-20260410163819-3bbb4da18a0a
 	github.com/clong1995/go-db-kv v0.0.0-20260329061028-35f48bcbfcb1
-	github.com/clong1995/go-encipher v0.0.0-20260315015454-e8484a857e2e
+	github.com/clong1995/go-encipher v0.0.0-20260331051300-b8f297fa09b6
 )
 
 require (
@@ -20,12 +20,12 @@ require (
 	github.com/klauspost/compress v1.18.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
-	go.opentelemetry.io/otel v1.42.0 // indirect
-	go.opentelemetry.io/otel/metric v1.42.0 // indirect
-	go.opentelemetry.io/otel/trace v1.42.0 // indirect
-	golang.org/x/net v0.52.0 // indirect
+	go.opentelemetry.io/otel v1.43.0 // indirect
+	go.opentelemetry.io/otel/metric v1.43.0 // indirect
+	go.opentelemetry.io/otel/trace v1.43.0 // indirect
+	golang.org/x/net v0.53.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.42.0 // indirect
+	golang.org/x/sys v0.43.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )
 
