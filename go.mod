@@ -3,10 +3,10 @@ module github.com/clong1995/go-server
 go 1.26
 
 require (
-	github.com/clong1995/go-ansi-color v0.0.0-20260329160324-213fff2ee7eb
-	github.com/clong1995/go-config v0.0.0-20260410163819-3bbb4da18a0a
-	github.com/clong1995/go-db-kv v0.0.0-20260329061028-35f48bcbfcb1
-	github.com/clong1995/go-encipher v0.0.0-20260331051300-b8f297fa09b6
+	github.com/clong1995/go-ansi-color v0.0.0-20260410194334-5edd5923bf0d
+	github.com/clong1995/go-config v0.0.0-20260410194335-aa5b4968448a
+	github.com/clong1995/go-db-kv v0.0.0-20260410194336-cfe3bc77aab8
+	github.com/clong1995/go-encipher v0.0.0-20260410194338-845ab80f79df
 )
 
 require (
