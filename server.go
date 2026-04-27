@@ -106,12 +106,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				buf := bytes.NewBuffer(all)
 				if handle.Gob {
 					if paramErr := gob.Decode(buf, req); paramErr != nil {
-						pcolor.PrintErr(prefix, "%+v", paramErr)
+						pcolor.PrintError(prefix, paramErr)
 						return paramErr
 					}
 				} else {
 					if paramErr := json.Decode(buf, req); paramErr != nil {
-						pcolor.PrintErr(prefix, "%+v", paramErr)
+						pcolor.PrintError(prefix, paramErr)
 						return paramErr
 					}
 				}
@@ -126,7 +126,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			if handle.Gob {
 				if res != nil {
 					if paramErr := gob.Encode(res, buf); paramErr != nil {
-						pcolor.PrintErr(prefix, "%+v", paramErr)
+						pcolor.PrintError(prefix, paramErr)
 						return nil, paramErr
 					}
 				}
@@ -136,7 +136,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 					Data:      res,
 					Timestamp: time.Now().Unix(),
 				}, buf); paramErr != nil {
-					pcolor.PrintErr(prefix, "%+v", paramErr)
+					pcolor.PrintError(prefix, paramErr)
 					return nil, paramErr
 				}
 			}
@@ -176,19 +176,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		switch cacheType {
 		case "perm":
 			if storage, err = kv.Storage[[]byte](key, process); err != nil {
-				pcolor.PrintErr(prefix, "%+v\n", err)
+				pcolor.PrintError(prefix, err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		case "ttl":
 			if storage, err = kv.Storage[[]byte](key, process, ttl); err != nil {
-				pcolor.PrintErr(prefix, "%+v\n", err)
+				pcolor.PrintError(prefix, err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		case "ttl-dsc":
 			if storage, err = kv.Storage[[]byte](key, process, ttl, 1); err != nil {
-				pcolor.PrintErr(prefix, "%+v\n", err)
+				pcolor.PrintError(prefix, err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
@@ -205,18 +205,20 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		result, err = handle.Process(uid, func(req any) error {
 			if handle.Gob {
 				if decodeErr := gob.Decode(r.Body, req); decodeErr != nil {
+					pcolor.PrintError(prefix, decodeErr)
 					return decodeErr
 				}
 				return nil
 			}
 			if decodeErr := json.Decode(r.Body, req); decodeErr != nil {
+				pcolor.PrintError(prefix, decodeErr)
 				return decodeErr
 			}
 			return nil
 		})
 
 		if err != nil {
-			pcolor.PrintError(prefix, err)
+			pcolor.PrintErr(prefix, "%+v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -224,7 +226,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		if handle.Gob {
 			if result != nil {
 				if err = gob.Encode(result, w); err != nil {
-					pcolor.PrintErr(prefix, "%+v", err)
+					pcolor.PrintError(prefix, err)
 				}
 			}
 		} else {
@@ -233,7 +235,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				Data:      result,
 				Timestamp: time.Now().Unix(),
 			}, w); err != nil {
-				pcolor.PrintErr(prefix, "%+v", err)
+				pcolor.PrintError(prefix, err)
 			}
 		}
 	}
