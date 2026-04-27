@@ -3,7 +3,6 @@ package server
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,6 +11,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/pkg/errors"
 
 	pcolor "github.com/clong1995/go-ansi-color"
 	kv "github.com/clong1995/go-db-kv"
@@ -105,19 +106,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				buf := bytes.NewBuffer(all)
 				if handle.Gob {
 					if paramErr := gob.Decode(buf, req); paramErr != nil {
-						pcolor.PrintErr(prefix, "%+v\n", paramErr)
+						pcolor.PrintErr(prefix, "%+v", paramErr)
 						return paramErr
 					}
 				} else {
 					if paramErr := json.Decode(buf, req); paramErr != nil {
-						pcolor.PrintErr(prefix, "%+v\n", paramErr)
+						pcolor.PrintErr(prefix, "%+v", paramErr)
 						return paramErr
 					}
 				}
 				return nil
 			})
 			if processErr != nil {
-				pcolor.PrintErr(prefix, "%+v\n", processErr)
+				pcolor.PrintErr(prefix, "%+v", processErr)
 				return nil, processErr
 			}
 
@@ -125,7 +126,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			if handle.Gob {
 				if res != nil {
 					if paramErr := gob.Encode(res, buf); paramErr != nil {
-						pcolor.PrintErr(prefix, "%+v\n", paramErr)
+						pcolor.PrintErr(prefix, "%+v", paramErr)
 						return nil, paramErr
 					}
 				}
@@ -135,7 +136,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 					Data:      res,
 					Timestamp: time.Now().Unix(),
 				}, buf); paramErr != nil {
-					pcolor.PrintErr(prefix, "%+v\n", paramErr)
+					pcolor.PrintErr(prefix, "%+v", paramErr)
 					return nil, paramErr
 				}
 			}
@@ -204,13 +205,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		result, err = handle.Process(uid, func(req any) error {
 			if handle.Gob {
 				if decodeErr := gob.Decode(r.Body, req); decodeErr != nil {
-					pcolor.PrintErr(prefix, "%+v\n", decodeErr)
 					return decodeErr
 				}
 				return nil
 			}
 			if decodeErr := json.Decode(r.Body, req); decodeErr != nil {
-				pcolor.PrintErr(prefix, "%+v\n", decodeErr)
 				return decodeErr
 			}
 			return nil
@@ -225,7 +224,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		if handle.Gob {
 			if result != nil {
 				if err = gob.Encode(result, w); err != nil {
-					pcolor.PrintErr(prefix, "%+v\n", err)
+					pcolor.PrintErr(prefix, "%+v", err)
 				}
 			}
 		} else {
@@ -234,7 +233,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				Data:      result,
 				Timestamp: time.Now().Unix(),
 			}, w); err != nil {
-				pcolor.PrintErr(prefix, "%+v\n", err)
+				pcolor.PrintErr(prefix, "%+v", err)
 			}
 		}
 	}

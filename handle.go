@@ -2,6 +2,8 @@ package server
 
 import (
 	"log"
+
+	pcolor "github.com/clong1995/go-ansi-color"
 )
 
 type Handle struct {
@@ -21,7 +23,7 @@ func (h Handle) Register() {
 
 	_, ok := hs.get(h.Uri)
 	if ok {
-		log.Fatalf("%s is redeclared \n", h.Uri)
+		pcolor.PrintFatal(prefix, "%s is redeclared", h.Uri)
 	}
 
 	hs.set(h.Uri, h)
